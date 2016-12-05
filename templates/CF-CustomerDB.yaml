@@ -44,7 +44,8 @@ Parameters:
     Description: WebServer EC2 instance type
     Type: String
     Default: m3.medium
-    AllowedValues: m3.medium
+    AllowedValues:
+      - m3.medium
     ConstraintDescription: Must be a valid EC2 instance type.
   SSHLocation:
     Description: "The IP address range that can be used to SSH to the EC2 instances"
@@ -72,29 +73,32 @@ Resources:
               mysql-libs   : []
         files: 
           /tmp/setup.mysql:
-            content: !Sub | 
-              CREATE DATABASE ${DBName};
-              CREATE USER '${DBUsername}'@'localhost' IDENTIFIED BY '${DBPassword}';
-              GRANT ALL ON ${DBName}.* TO '${DBUsername}'@'localhost';
-              FLUSH PRIVILEGES;
-            mode: "000644"
-            owner: "root"
-            group: "root"
+            content:
+              !Sub | 
+                CREATE DATABASE ${DBName};
+                CREATE USER '${DBUsername}'@'localhost' IDENTIFIED BY '${DBPassword}';
+                GRANT ALL ON ${DBName}.* TO '${DBUsername}'@'localhost';
+                FLUSH PRIVILEGES;
+            mode: 000644
+            owner: root
+            group: root
           /etc/cfn/cfn-hup.conf:
-            content: !Sub |
-              [main]
-              stack=${AWS::StackId}
-              region=${AWS::Region
-            mode: '000400'
+            content:
+              !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+            mode: 000400
             owner: root
             group: root
           /etc/cfn/hooks.d/cfn-auto-reloader.conf":
-            content: !Sub |
-              [cfn-auto-reloader-hook]
-              triggers=post.update
-              path=Resources.WebServerInstance.Metadata.AWS::CloudFormation::Init
-              action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServerInstance --configsets InstallAndRun --region ${AWS::Region}
-              runas=root
+            content: 
+              !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.WebServerInstance.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServerInstance --configsets InstallAndRun --region ${AWS::Region}
+                runas=root
         service:
             sysvinit:
               mysqld:
