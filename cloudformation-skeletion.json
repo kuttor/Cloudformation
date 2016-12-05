@@ -1,19 +1,45 @@
 {
-    "AWSTemplateFormatVersion": "version date",
-    "Description": "Cloudformation Skeleton Template",
-    "Parameters":{
-        "set of params"
-    },
-    "Mappings":{
-        "set of mappings"
-    },
-    "Resources":{
-        "set of resources"
-    },
-    "Conditions":{
-        "set of conditions"
-    },
-    "Outputs":{
-        "set of outputs"
+  "AWSTemplateFormatVersion": "version date",
+  "Description": "Creates the required Private Hosted Zones for the Kaos Appliance",
+  "Parameters": {
+    "set of params": "string"
+  },
+  "Resources": {
+    "DNS": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "HostedZoneConfig": {
+          "Comment": "DNS name for my instance.",
+          "Name": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "HostedZone"
+                },
+                "."
+              ]
+            ],
+            "Type": "A",
+            "TTL": "900",
+            "ResourceRecords": [
+              {
+                "Fn::GetAtt": [
+                  "ApplianceEC2",
+                  "PrivateIp"
+                ]
+              }
+            ],
+            "VPCId": {
+              "Ref": "VpcId"
+            }
+          }
+        }
+      }
     }
+  }
 }

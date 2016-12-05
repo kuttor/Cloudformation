@@ -1,0 +1,46 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "This is a demonstration AWS CloudFormation template containing two instances",
+    "Parameters": {
+        "AmiId" : {
+            "Description": "Identifier of the base Amazon Machine Image (AMI) for the instances in this sample (please use Microsoft Windows Server 2012 R2 Base)",
+            "Type" : "AWS::EC2::Image::Id"
+        },
+        "InstanceType" : {
+            "Description": "EC2 instance type to use for the instances in this sample",
+            "Default": "m3.medium",
+            "Type" : "String"
+        },
+    },
+    "Resources" : { 
+        "Instance1": {
+            "Type": "AWS::EC2::Instance",
+            "CreationPolicy" : {
+                "ResourceSignal" : {
+                    "Timeout": "PT15M",
+                    "Count"  : "1"
+                }
+            },
+            "Properties": {
+                "AmiId": { "Ref" : "AmiId" },
+                "InstanceType": { "Ref": "InstanceType" },
+                "UserData": {
+                    "FN::Base64": {
+                        "FN::Join": [ "n", [
+                            "<script>",
+                            "Do any instance config steps necessary."
+                        ] ]
+                    }
+                }
+            }
+        },
+
+        "Instance2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AmiId": { "Ref" : "AmiId" },
+                "InstanceType": { "Ref": "InstanceType" },
+            }
+        }
+    }
+}
